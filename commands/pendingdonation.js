@@ -13,6 +13,7 @@ module.exports = {
     .setName("pendingdonation")
     .setDescription("Shows Users With Pending Donations In Clan"),
   async execute(interaction) {
+    const guild = interaction.guild;
     const roleName = "The Chosen";
 
     const role = interaction.member.roles.cache.find(
@@ -41,11 +42,23 @@ module.exports = {
     const donators = await User.find({ extraWeeks: { $lt: 0 } }).sort({
       extraWeeks: -1,
     });
+    const donatorsWithUsername = await Promise.all(
+      donators.map(async (donator) => {
+        try {
+          const member = await guild.members.fetch(donator.id);
+          return { ...donator.toObject(), username: member.user.username };
+        } catch (error) {
+          // Handle errors, such as if the member is not found
+          console.error(`Error fetching member for user with ID ${donator.id}:`, error.message);
+          return { ...donator.toObject(), username: 'Unknown' }; // Default value or handle as needed
+        }
+      })
+    );
 
-    if (donators.length > 0) {
+    if (donatorsWithUsername.length > 0) {
       const itemsPerPage = 10;
       let currentPage = 1;
-      const totalPages = Math.ceil(donators.length / itemsPerPage);
+      const totalPages = Math.ceil(donatorsWithUsername.length / itemsPerPage);
 
       function generateEmbed(page) {
         const startIndex = (page - 1) * itemsPerPage;
@@ -57,10 +70,10 @@ module.exports = {
           .setDescription(`Showing All The Users With Pending Donations`)
           .setFooter({ text: `Showing page ${page} of ${totalPages}` });
 
-        for (let i = startIndex; i < endIndex && i < donators.length; i++) {
+        for (let i = startIndex; i < endIndex && i < donatorsWithUsername.length; i++) {
           embed.addFields({
-            name: `#${i + 1} | <@${donators[i].id}>`,
-            value: `Weeks Skipped: ${Math.abs(donators[i].extraWeeks)}`,
+            name: `#${i + 1} | ${donatorsWithUsername[i].username}`,
+            value: `Weeks Skipped: ${Math.abs(donatorsWithUsername[i].extraWeeks)}\nID: ${donatorsWithUsername[i].id}`,
 
             inline: true,
           });

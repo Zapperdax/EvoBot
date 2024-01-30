@@ -13,6 +13,7 @@ module.exports = {
     .setName("lb")
     .setDescription("Shows Weekly Contribution Of Everyone In Clan"),
   async execute(interaction) {
+    const guild = interaction.guild;
     const roleName = "The Chosen";
 
     const role = interaction.member.roles.cache.find(
@@ -39,15 +40,26 @@ module.exports = {
     }
 
     const donators = await User.find({}).sort({ amount: -1 });
-
+    const donatorsWithUsername = await Promise.all(
+      donators.map(async (donator) => {
+        try {
+          const member = await guild.members.fetch(donator.id);
+          return { ...donator.toObject(), username: member.user.username };
+        } catch (error) {
+          // Handle errors, such as if the member is not found
+          console.error(`Error fetching member for user with ID ${donator.id}:`, error.message);
+          return { ...donator.toObject(), username: 'Unknown' }; // Default value or handle as needed
+        }
+      })
+    );
+    
     const itemsPerPage = 10;
     let currentPage = 1;
-    const totalPages = Math.ceil(donators.length / itemsPerPage);
+    const totalPages = Math.ceil(donatorsWithUsername.length / itemsPerPage);
 
     function generateEmbed(page) {
       const startIndex = (page - 1) * itemsPerPage;
       const endIndex = startIndex + itemsPerPage;
-
       const embed = new EmbedBuilder()
         .setColor("#bb8368")
         .setTitle("This Weeks Donations")
@@ -55,17 +67,15 @@ module.exports = {
           `Showing All The Donations In Order From Highest To Lowest`
         )
         .setFooter({ text: `Showing page ${page} of ${totalPages}` });
-
-      for (let i = startIndex; i < endIndex && i < donators.length; i++) {
+      for (let i = startIndex; i < endIndex && i < donatorsWithUsername.length; i++) {
         embed.addFields({
-          name: `#${i + 1} | <@${donators[i].id}>`,
+          name: `#${i + 1} | ${donatorsWithUsername[i].username}`,
           value: `Donation: ${new Intl.NumberFormat().format(
-            donators[i].amount
-          )}\nExtra Weeks: ${donators[i].extraWeeks}`,
+            donatorsWithUsername[i].amount
+          )}\nExtra Weeks: ${donatorsWithUsername[i].extraWeeks}\nID: ${donatorsWithUsername[i].id}`,
           inline: true,
         });
       }
-
       return embed;
     }
 

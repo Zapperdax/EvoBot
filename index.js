@@ -1,4 +1,5 @@
-const { Client, GatewayIntentBits, Collection } = require("discord.js");
+const { Client, GatewayIntentBits, Collection, ActivityType } = require("discord.js");
+const {EmbedBuilder } = require("discord.js");
 require("dotenv").config();
 const fs = require("node:fs");
 const path = require("node:path");
@@ -14,6 +15,7 @@ const client = new Client({
     GatewayIntentBits.Guilds,
     GatewayIntentBits.GuildMessages,
     GatewayIntentBits.MessageContent,
+    GatewayIntentBits.GuildPresences,
   ],
 });
 
@@ -50,6 +52,10 @@ for (const file of commandFiles) {
     );
   }
 }
+
+client.on("ready", () => {
+  client.user.setActivity('Over Clan Donations.', {type: ActivityType.Watching});
+});
 
 client.on("messageCreate", async (message) => {
   try {
@@ -112,8 +118,34 @@ client.on("messageCreate", async (message) => {
           message.channel.send(
             `Successfully Updated Your Gold To ${new Intl.NumberFormat().format(
               amount
-            )} In Your Donation, Use /info To See`
+            )} In Your Donation.`
           );
+          
+          let emoji = "❌";
+
+          if (amount >= weeklyDonation || updateObject.$set.extraWeeks > 0) {
+            emoji = "✅";
+          }
+        
+          const infoEmbed = new EmbedBuilder()
+            .setColor("#bb8368")
+            .setAuthor({
+              name: message.author.tag + "'s Weekly Donation",
+              iconURL: message.author.displayAvatarURL(),
+            })
+            .addFields({
+              name: "Amount Donated This Week",
+              value:
+                new Intl.NumberFormat().format(amount).toString() +
+                ` / ${new Intl.NumberFormat().format(weeklyDonation).toString()}\nStatus: ${emoji}\nExtra Weeks: ${updateObject.$set.extraWeeks}`,
+            })
+            .setTimestamp()
+            .setFooter({
+              text:
+                "Use /help <command> To Get Information About A Specific Command",
+            });
+          await message.channel.send({ embeds: [infoEmbed] });
+          
         } else {
           message.channel.send(
             "Failed To Log Donation, Please Ask An Admin To Log Your Donation."
