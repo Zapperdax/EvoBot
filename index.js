@@ -1,5 +1,10 @@
-const { Client, GatewayIntentBits, Collection, ActivityType } = require("discord.js");
-const {EmbedBuilder } = require("discord.js");
+const {
+  Client,
+  GatewayIntentBits,
+  Collection,
+  ActivityType,
+} = require("discord.js");
+const { EmbedBuilder } = require("discord.js");
 require("dotenv").config();
 const fs = require("node:fs");
 const path = require("node:path");
@@ -54,105 +59,110 @@ for (const file of commandFiles) {
 }
 
 client.on("ready", () => {
-  client.user.setActivity('Over Clan Donations.', {type: ActivityType.Watching});
+  client.user.setActivity("Over Clan Donations.", {
+    type: ActivityType.Watching,
+  });
 });
 
 client.on("messageCreate", async (message) => {
   try {
-    const messageRegex = /^\.cl donate [1-9]\d*(?:\s+.*)?$/;
     if (
-      message.channel.id === config.donationChannelId &&
-      message.content.match(messageRegex)
+      message.embeds.length > 0 &&
+      message.author.id === config.anigameBotId
     ) {
-      const user = message.author.id;
-      const filter = (m) => m.author.id === config.anigameBotId; //bot id
-      const botMessage = await message.channel.awaitMessages({
-        filter,
-        max: 1,
+      const embed = message.embeds.find((embed) => {
+        const targetTitle = "Success";
+        const targetDescription = "you have donated";
+        return (
+          embed.title.includes(targetTitle) &&
+          embed.description.includes(targetDescription)
+        );
       });
-      if (botMessage.first().embeds[0]) {
-        if (botMessage.first().embeds[0].title.startsWith("Success")) {
-          const { weeklyDonation } = await Donation.findOne({
-            _id: "63fb483ba6fd21c8d67e04c3",
-          });
-          const text = botMessage.first().embeds[0].description;
-          const regex = /you have donated \*\*([\d,]+)\*\* Gold/;
-          const match = await text.match(regex);
-          let amount = Number(match[1].replace(/,/g, ""));
-          const currentUser = await User.findOne({ id: user.toString() });
-          if (!currentUser) {
-            message.channel.send(
-              "You Donated Into The Clan, Without Registration, Please Use /register, And Ask An Admin To Log Your Donation."
-            );
-            return;
-          }
-          let donated = false;
-          const previousDonation = currentUser.amount;
-          amount += previousDonation;
 
-          const updateObject = {
-            $set: {
-              amount,
-            },
-          };
+      if (embed) {
+        const { weeklyDonation } = await Donation.findOne({
+          _id: "63fb483ba6fd21c8d67e04c3",
+        });
 
-          const extra = Math.floor((amount - weeklyDonation) / weeklyDonation);
-          if (extra >= 1) {
-            updateObject.$set.extraWeeks = extra;
-          }
-
-          //This is if user got out from negtive donation to positive
-          if (amount >= 0 && amount < weeklyDonation * 2) {
-            updateObject.$set.extraWeeks = 0;
-          } else if (amount < 0) {
-            const extra = Math.floor(amount / weeklyDonation);
-            updateObject.$set.extraWeeks = extra;
-          }
-
-          if (amount >= weeklyDonation && updateObject.$set.extraWeeks >= 0) {
-            donated = true;
-          }
-          updateObject.$set.donated = donated;
-
-          await User.findOneAndUpdate({ id: user.toString() }, updateObject);
+        const regex =
+          /Summoner \*\*(\w+)\*\*, you have donated \*\*([\d,]+)\*\* Gold/;
+        const match = embed.description.match(regex);
+        let name = match[1];
+        let amount = Number(match[2].replace(/,/g, ""));
+        const user = client.users.cache.find(
+          (user) => user.username == name
+        );
+        const currentUser = await User.findOne({ id: user.id.toString() });
+        if (!currentUser) {
           message.channel.send(
-            `Successfully Updated Your Gold To ${new Intl.NumberFormat().format(
-              amount
-            )} In Your Donation.`
+            "You Donated Into The Clan, Without Registration, Please Use /register, And Ask An Admin To Log Your Donation."
           );
-          
-          let emoji = "❌";
-
-          if (amount >= weeklyDonation || updateObject.$set.extraWeeks > 0) {
-            emoji = "✅";
-          }
-        
-          const infoEmbed = new EmbedBuilder()
-            .setColor("#bb8368")
-            .setAuthor({
-              name: message.author.tag + "'s Weekly Donation",
-              iconURL: message.author.displayAvatarURL(),
-            })
-            .addFields({
-              name: "Amount Donated This Week",
-              value:
-                new Intl.NumberFormat().format(amount).toString() +
-                ` / ${new Intl.NumberFormat().format(weeklyDonation).toString()}\nStatus: ${emoji}\nExtra Weeks: ${updateObject.$set.extraWeeks}`,
-            })
-            .setTimestamp()
-            .setFooter({
-              text:
-                "Use /help <command> To Get Information About A Specific Command",
-            });
-          await message.channel.send({ embeds: [infoEmbed] });
-          
-        } else {
-          message.channel.send(
-            "Failed To Log Donation, Please Ask An Admin To Log Your Donation."
-          );
+          return;
         }
+        let donated = false;
+        const previousDonation = currentUser.amount;
+        amount += previousDonation;
+
+        const updateObject = {
+          $set: {
+            amount,
+          },
+        };
+
+        const extra = Math.floor((amount - weeklyDonation) / weeklyDonation);
+        if (extra >= 1) {
+          updateObject.$set.extraWeeks = extra;
+        }
+
+        //This is if user got out from negtive donation to positive
+        if (amount >= 0 && amount < weeklyDonation * 2) {
+          updateObject.$set.extraWeeks = 0;
+        } else if (amount < 0) {
+          const extra = Math.floor(amount / weeklyDonation);
+          updateObject.$set.extraWeeks = extra;
+        }
+
+        if (amount >= weeklyDonation && updateObject.$set.extraWeeks >= 0) {
+          donated = true;
+        }
+        updateObject.$set.donated = donated;
+
+        await User.findOneAndUpdate({ id: user.id.toString() }, updateObject);
+        message.channel.send(
+          `Successfully Updated Your Gold To ${new Intl.NumberFormat().format(
+            amount
+          )} In Your Donation.`
+        );
+
+        let emoji = "❌";
+
+        if (amount >= weeklyDonation || updateObject.$set.extraWeeks > 0) {
+          emoji = "✅";
+        }
+
+        const infoEmbed = new EmbedBuilder()
+          .setColor("#bb8368")
+          .setAuthor({
+            name: user.displayName + "'s Weekly Donation",
+            iconURL: user.avatarURL(),
+          })
+          .addFields({
+            name: "Amount Donated This Week",
+            value:
+              new Intl.NumberFormat().format(amount).toString() +
+              ` / ${new Intl.NumberFormat()
+                .format(weeklyDonation)
+                .toString()}\nStatus: ${emoji}\nExtra Weeks: ${
+                updateObject.$set.extraWeeks
+              }`,
+          })
+          .setTimestamp()
+          .setFooter({
+            text: "Use /help <command> To Get Information About A Specific Command",
+          });
+        await message.channel.send({ embeds: [infoEmbed] });
       } else {
-        message.channel.send("Bot Is On Cool Down ...");
+        return;
       }
     }
   } catch (e) {
