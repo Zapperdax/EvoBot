@@ -85,7 +85,7 @@ client.on("messageCreate", async (message) => {
         });
 
         const regex =
-          /Summoner \*\*(\w+)\*\*, you have donated \*\*([\d,]+)\*\* Gold/;
+          /Summoner \*\*(.+?)\*\*, you have donated \*\*([\d,]+)\*\* Gold/;
         const match = embed.description.match(regex);
         let name = match[1];
         let amount = Number(match[2].replace(/,/g, ""));
