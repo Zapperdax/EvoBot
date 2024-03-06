@@ -11,7 +11,7 @@ const path = require("node:path");
 const mongoose = require("mongoose");
 const User = require("./Model/userModel");
 const Donation = require("./Model/donationModel");
-const config = require("./config.js");
+const {config} = require("./config.js");
 
 const token = process.env.BOT_TOKEN;
 

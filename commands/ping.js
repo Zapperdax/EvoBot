@@ -5,6 +5,9 @@ module.exports = {
     .setName("ping")
     .setDescription("Replies To Ping"),
   async execute(interaction) {
+    if (!hasPermissions) {
+      return;
+    }
     await interaction.reply("Pong");
   },
 };

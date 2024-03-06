@@ -1,7 +1,7 @@
 const { Events } = require("discord.js");
 const cron = require("cron");
 const User = require("../Model/userModel");
-const config = require("../config.js");
+const {config} = require("../config.js");
 const Donation = require("../Model/donationModel");
 
 module.exports = {
