@@ -58,7 +58,7 @@ for (const file of commandFiles) {
   }
 }
 
-//To set status of bot
+//To set status of bot, it gades away after some time
 client.on("ready", () => {
   client.user.setActivity("Over Clan Donations.", {
     type: ActivityType.Watching,
