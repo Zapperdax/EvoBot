@@ -11,7 +11,11 @@ const path = require("node:path");
 const mongoose = require("mongoose");
 const User = require("./Model/userModel");
 const Donation = require("./Model/donationModel");
-const {config} = require("./config.js");
+const { config } = require("./config.js");
+const {
+  isExpressionValid,
+  calculateExpression,
+} = require("./functions/functions.js");
 
 const token = process.env.BOT_TOKEN;
 
@@ -21,6 +25,7 @@ const client = new Client({
     GatewayIntentBits.GuildMessages,
     GatewayIntentBits.MessageContent,
     GatewayIntentBits.GuildPresences,
+    GatewayIntentBits.GuildMessageReactions,
   ],
 });
 
@@ -90,9 +95,7 @@ client.on("messageCreate", async (message) => {
         const match = embed.description.match(regex);
         let name = match[1];
         let amount = Number(match[2].replace(/,/g, ""));
-        const user = client.users.cache.find(
-          (user) => user.username == name
-        );
+        const user = client.users.cache.find((user) => user.username == name);
         const currentUser = await User.findOne({ id: user.id.toString() });
         if (!currentUser) {
           message.channel.send(
@@ -165,6 +168,14 @@ client.on("messageCreate", async (message) => {
       } else {
         return;
       }
+    }
+    if (
+      !message.author.bot &&
+      message.content.match(/[+\-*\/^()\d\s.]/) &&
+      message.content.match(/[+\-*\/^()]/)
+    ) {
+      const expression = message.content;
+      calculateExpression(message, expression);
     }
   } catch (e) {
     console.error(e);
