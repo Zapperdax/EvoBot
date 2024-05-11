@@ -1,3 +1,5 @@
+const { EmbedBuilder } = require("discord.js");
+
 function isExpressionValid(expression) {
   try {
     // Attempt to evaluate the expression
@@ -27,7 +29,21 @@ async function calculateExpression(message, expression) {
       collector.on("collect", async (reaction, user) => {
         try {
           if (reaction.emoji.name === "✅") {
-            await message.channel.send(`Result: ${result}`);
+            const resultEmbed = new EmbedBuilder()
+              .setColor("#bb8368")
+              .setAuthor({
+                name: user.displayName,
+                iconURL: user.avatarURL(),
+              })
+              .addFields({
+                name: "Expression Result",
+                value: `\`\`\`${new Intl.NumberFormat().format(result).toString()}\`\`\``,
+              })
+              .setTimestamp()
+              .setFooter({
+                text: "Use /help <command> To Get Information About A Specific Command",
+              });
+            await message.channel.send({ embeds: [resultEmbed] });
             collector.stop(); // Stop the collector since we've got the reaction we need
           }
         } catch (error) {
