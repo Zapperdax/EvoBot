@@ -1,5 +1,5 @@
 const { REST, Routes } = require("discord.js");
-const fs = require("node:fs");
+const fs = require("fs");
 require("dotenv").config();
 
 const commands = [];
@@ -29,9 +29,9 @@ const rest = new REST({ version: "10" }).setToken(process.env.BOT_TOKEN);
       { body: commands }
     );
     console.log(
-      `Successfully Reloaded ${data.length} Application (/) Commands`
+      `Successfully Reloaded ${data.length} Application (/) Commands.`
     );
   } catch (e) {
-    console.error(e);
+    console.error("Error Refreshing Application (/) Commands:", e);
   }
 })();
