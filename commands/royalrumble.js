@@ -26,7 +26,7 @@ module.exports = {
     // Create a reaction collector
     const filter = (reaction, user) =>
       reaction.emoji.name === reactionEmoji && !user.bot;
-    const collector = message.createReactionCollector({ filter, time: 10000 }); // Collect for 60 seconds
+    const collector = message.createReactionCollector({ filter, time: 15000 }); // Collect for 60 seconds
 
     collector.on("collect", (reaction, user) => {
       if (!participants.includes(user.id)) {
