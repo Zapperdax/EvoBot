@@ -21,7 +21,9 @@ module.exports = {
     await message.react(reactionEmoji);
 
     // Array to store users who react
+    // let participants = ["796707183332556830", "552678985859989506", "821036826915635201", "329101548397264896", "231432639196823552", "761651894304768010", "732550798084407296"];
     let participants = [];
+    let defeatedParticipants = [];
 
     // Create a reaction collector
     const filter = (reaction, user) =>
@@ -45,6 +47,12 @@ module.exports = {
     });
 
     collector.on("end", async (collected) => {
+      // Handle case if no one joins
+      if (participants.length < 2) {
+        return interaction.followUp({
+          content: "Not Enough Participants To Start The Clash!",
+        });
+      }
       // Create an embed for participants
       const participants_embed = new EmbedBuilder()
         .setTitle("Celestial's Clash Participants")
@@ -75,7 +83,7 @@ module.exports = {
 
       // Create an embed for the battle outcome
       const battle_embed = new EmbedBuilder()
-        .setTitle("Battle Outcome!")
+        .setTitle("Someone Has Been Defeated!")
         .setDescription(
           `<@!${secondParticipant}> Has Defeated <@!${firstParticipant}>!`
         )
@@ -83,6 +91,52 @@ module.exports = {
 
       // Send the battle outcome as a follow-up message
       interaction.followUp({ embeds: [battle_embed] });
+
+      // Add the defeated participant to the defeatedParticipants array
+      defeatedParticipants.push(firstParticipant);
+
+      if(Math.random() < 0.3 && defeatedParticipants.length > 0) {
+        const reviveIndex = Math.floor(Math.random() * defeatedParticipants.length);
+        const revivedParticipant = defeatedParticipants[reviveIndex];
+
+        // Move the revive participant back to participants
+        participants.push(revivedParticipant);
+
+        // Remove the defeated participant from the defeatedParticipants array
+        defeatedParticipants.splice(reviveIndex, 1);
+
+        // Create an embed for the revive
+        const revive_embed = new EmbedBuilder()
+         .setTitle("Someone Is Being Revived!")
+         .setDescription(`<@!${revivedParticipant}> Has Been Revived!`)
+         .setColor(0x24a5c5);
+
+        // Send the revive announcement
+        await new Promise((resolve) => setTimeout(resolve, 5000)); // 5 second delay between battles
+        interaction.followUp({ embeds: [revive_embed] });
+      }
+    
+      const update_embed = new EmbedBuilder()
+      .setTitle("Status Of The Event!")
+      .setColor(0x24a5c5);
+      update_embed.addFields({
+        name: "Alive Participants",
+        value: participants.length > 0
+         ? participants.map((participant) => `<@!${participant}>`).join("\n") // Display each participant on a new line
+          : "None", // Handle case if no one joins
+        inline: true,
+      });
+
+      update_embed.addFields({
+        name: "Defeated Participants",
+        value: defeatedParticipants.length > 0
+         ? defeatedParticipants.map((participant) => `<@!${participant}>`).join("\n") // Display each participant on a new line
+          : "None", // Handle case if no one joins
+        inline: true,
+      });
+
+      await new Promise((resolve) => setTimeout(resolve, 5000)); // 5 second delay between battles
+      interaction.followUp({ embeds: [update_embed] });
     }
 
     // Once one participant is left, declare the winner
