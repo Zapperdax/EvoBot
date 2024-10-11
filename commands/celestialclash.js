@@ -373,7 +373,7 @@ module.exports = {
     // Create a reaction collector
     const filter = (reaction, user) =>
       reaction.emoji.name === reactionEmoji && !user.bot;
-    const collector = message.createReactionCollector({ filter, time: 30000 }); // Collect for 60 seconds
+    const collector = message.createReactionCollector({ filter, time: 60000 }); // Collect for 60 seconds
 
     // Log "5 seconds remaining" when there are 5 seconds left
     setTimeout(() => {
@@ -383,7 +383,7 @@ module.exports = {
         .setDescription("10 Seconds Remaining!!!")
         .setColor(0x24a5c5);
       interaction.followUp({ embeds: [five_seconds_embed], fetchReply: true });
-    }, 20000); // 10 seconds delay (30000 - 20000 = 10000 ms)
+    }, 50000); // 10 seconds delay (60000 - 50000 = 10000 ms)
 
     collector.on("collect", (reaction, user) => {
       if (!participants.includes(user.id)) {
@@ -468,7 +468,7 @@ module.exports = {
         // Add the defeated participant to the defeatedParticipants array
         defeatedParticipants.push(firstParticipant);
 
-        if (Math.random() < 0.3 && defeatedParticipants.length > 0) {
+        if (Math.random() < 0.10 && defeatedParticipants.length > 0) {
           const reviveIndex = Math.floor(
             Math.random() * defeatedParticipants.length
           );
