@@ -10,7 +10,7 @@ module.exports = {
     const embed = new EmbedBuilder()
       .setTitle("Celestial's Clash Event!")
       .setDescription(
-        "React To This Message To Join The Celestial's Clash Event!"
+        "Event Starting In 1 Minute\nReact To This Message To Join The Celestial's Clash Event!"
       )
       .setColor(0x24a5c5);
 
@@ -23,16 +23,16 @@ module.exports = {
     await message.react(reactionEmoji);
 
     // Array to store users who react
-    // let participants = [
-    //   "796707183332556830",
-    //   "552678985859989506",
-    //   "821036826915635201",
-    //   "329101548397264896",
-    //   "231432639196823552",
-    //   "761651894304768010",
-    //   "732550798084407296",
-    // ];
-    let participants = [];
+    let participants = [
+      "796707183332556830",
+      "552678985859989506",
+      "821036826915635201",
+      "329101548397264896",
+      "231432639196823552",
+      "761651894304768010",
+      "732550798084407296",
+    ];
+    // let participants = [];
 
     // Array of participants who lost
     let defeatedParticipants = [];
@@ -145,8 +145,8 @@ module.exports = {
         lastPhrase: "{player2} retreated in awe of their rare Charizard!",
       },
       {
-        firstPhrase: "{player1} tried to dab on",
-        middlePhrase: "{player2},",
+        firstPhrase: "{player2} tried to dab on",
+        middlePhrase: "{player1},",
         lastPhrase:
           "but slipped and faceplanted. A valiant attempt, nonetheless!",
       },
@@ -156,8 +156,8 @@ module.exports = {
         lastPhrase: "{player2} disappear. Poof, just like that!",
       },
       {
-        firstPhrase: "{player1} challenged",
-        middlePhrase: "{player2} to a game of charades,",
+        firstPhrase: "{player2} challenged",
+        middlePhrase: "{player1} to a game of charades,",
         lastPhrase: "but forgot all the clues, leaving everyone confused.",
       },
       {
@@ -169,7 +169,7 @@ module.exports = {
       {
         firstPhrase: "{player1} sent",
         middlePhrase: "{player2} a text message mid-fight,",
-        lastPhrase: "and they got so distracted by emojis they surrendered.",
+        lastPhrase: "and {player2} got so distracted by emojis they surrendered.",
       },
       {
         firstPhrase: "{player1} tried to use the Force,",
@@ -183,8 +183,8 @@ module.exports = {
           "{player2} couldn't handle the high notes and ran for the hills.",
       },
       {
-        firstPhrase: "{player1} attempted to roast",
-        middlePhrase: "{player2},",
+        firstPhrase: "{player2} attempted to roast",
+        middlePhrase: "{player1},",
         lastPhrase: "but ended up roasting themselves instead!",
       },
       {
@@ -243,13 +243,13 @@ module.exports = {
         lastPhrase: "{player2} was so confused they left without a word.",
       },
       {
-        firstPhrase: "{player1} tried to do parkour off the walls,",
+        firstPhrase: "{player2} tried to do parkour off the walls,",
         middlePhrase: "but ended up tripping over",
-        lastPhrase: "{player2}'s shoes.",
+        lastPhrase: "{player1}'s shoes.",
       },
       {
-        firstPhrase: "{player1} challenged",
-        middlePhrase: "{player2} to a thumb war,",
+        firstPhrase: "{player2} challenged",
+        middlePhrase: "{player1} to a thumb war,",
         lastPhrase: "and somehow lost within the first 5 seconds!",
       },
     ];
@@ -430,6 +430,10 @@ module.exports = {
           .setTitle(`Round ${roundsCount}`)
           .setColor(0x24a5c5);
 
+        update_embed = new EmbedBuilder()
+        .setTitle("Status Of The Event!")
+        .setColor(0x24a5c5);
+        
         // Select a random battlePhrase
         const randomBattlePhraseIndex = Math.floor(
           Math.random() * battleTexts.length
@@ -483,35 +487,33 @@ module.exports = {
             name: "Revival Of A Celestial",
             value: reviveTextFinal,
           });
-
-          // Send the revive announcement
-          await new Promise((resolve) => setTimeout(resolve, 5000)); // 5 second delay between battles
-          // interaction.followUp({ embeds: [revive_embed] });
         }
 
-        const update_embed = new EmbedBuilder()
-          .setTitle("Status Of The Event!")
-          .setColor(0x24a5c5);
         update_embed.addFields({
-          name: "Alive Participants",
+          name: `Round ${roundsCount}`,
+          value: "Celestials Status",
+        });
+
+        update_embed.addFields({
+          name: `Alive Celestials`,
           value:
             participants.length > 0
               ? participants
                   .map((participant) => `<@!${participant}>`)
                   .join("\n") // Display each participant on a new line
               : "None", // Handle case if no one joins
-          inline: true,
+          inline: true
         });
 
         update_embed.addFields({
-          name: "Defeated Participants",
+          name: `Defeated Celestials`,
           value:
             defeatedParticipants.length > 0
               ? defeatedParticipants
                   .map((participant) => `<@!${participant}>`)
                   .join("\n") // Display each participant on a new line
               : "None", // Handle case if no one joins
-          inline: true,
+          inline:true
         });
 
         // Send the battle outcome as a follow-up message
@@ -525,6 +527,7 @@ module.exports = {
 
       // Once one participant is left, declare the winner
       if (participants.length === 1) {
+
         await new Promise((resolve) => setTimeout(resolve, 5000)); // 5 second delay between battles
         const winner = participants[0];
         const winner_embed = new EmbedBuilder()
