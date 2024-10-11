@@ -23,16 +23,16 @@ module.exports = {
     await message.react(reactionEmoji);
 
     // Array to store users who react
-    let participants = [
-      "796707183332556830",
-      "552678985859989506",
-      "821036826915635201",
-      "329101548397264896",
-      "231432639196823552",
-      "761651894304768010",
-      "732550798084407296",
-    ];
-    // let participants = [];
+    // let participants = [
+    //   "796707183332556830",
+    //   "552678985859989506",
+    //   "821036826915635201",
+    //   "329101548397264896",
+    //   "231432639196823552",
+    //   "761651894304768010",
+    //   "732550798084407296",
+    // ];
+    let participants = [];
 
     // Array of participants who lost
     let defeatedParticipants = [];
@@ -413,7 +413,7 @@ module.exports = {
 
       // Continue the battle until only one participant is left
       while (participants.length > 1) {
-        await new Promise((resolve) => setTimeout(resolve, 5000)); // 5 second delay between battles
+        await new Promise((resolve) => setTimeout(resolve, 7000)); // 5 second delay between battles
         // Randomly select the first participant
         const firstIndex = Math.floor(Math.random() * participants.length);
         const firstParticipant = participants[firstIndex];
@@ -433,7 +433,7 @@ module.exports = {
         update_embed = new EmbedBuilder()
         .setTitle("Status Of The Event!")
         .setColor(0x24a5c5);
-        
+
         // Select a random battlePhrase
         const randomBattlePhraseIndex = Math.floor(
           Math.random() * battleTexts.length
@@ -519,7 +519,7 @@ module.exports = {
         // Send the battle outcome as a follow-up message
         interaction.followUp({ embeds: [battle_embed] });
 
-        await new Promise((resolve) => setTimeout(resolve, 5000)); // 5 second delay between battles
+        await new Promise((resolve) => setTimeout(resolve, 7000)); // 5 second delay between battles
         interaction.followUp({ embeds: [update_embed] });
 
         roundsCount++;
@@ -528,7 +528,7 @@ module.exports = {
       // Once one participant is left, declare the winner
       if (participants.length === 1) {
 
-        await new Promise((resolve) => setTimeout(resolve, 5000)); // 5 second delay between battles
+        await new Promise((resolve) => setTimeout(resolve, 7000)); // 5 second delay between battles
         const winner = participants[0];
         const winner_embed = new EmbedBuilder()
           .setTitle("Winner!")
