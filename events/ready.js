@@ -3,6 +3,7 @@ const cron = require("cron");
 const User = require("../Model/userModel");
 const {config} = require("../config.js");
 const Donation = require("../Model/donationModel");
+const getRandomMeme  = require("./functions/memeapi.js");
 
 module.exports = {
   name: Events.ClientReady,
@@ -11,6 +12,7 @@ module.exports = {
     console.log(`Logged In As ${client.user.tag}`);
 
     const channel = client.channels.cache.get(config.donationChannelId);
+    const memeChannelId = client.channels.cache.get(config.memeChannelId);
     if (!channel) {
       console.log("No Channel Found");
       return;
@@ -91,8 +93,24 @@ module.exports = {
       true,
       "Asia/Karachi"
     );
+    const job2 = new cron.CronJob(
+      "0 * * * * *",
+      async () => {
+        try {
+          const meme = await getRandomMeme();
+          memeChannelId.send(meme.description);
+          memeChannelId.send(meme.url);
+        } catch (err) {
+          console.error(err);
+        }
+      },
+      null,
+      true,
+      "Asia/Karachi"
+    );
 
     job0.start();
     job1.start();
+    job2.start();
   },
 };
