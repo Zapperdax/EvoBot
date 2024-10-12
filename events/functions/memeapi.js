@@ -1,3 +1,5 @@
+require("dotenv").config();
+
 let getRandomMeme = () => {
   const url = "https://api.apileague.com/retrieve-random-meme?media-type=image";
   const apiKey = process.env.RANDOM_MEME_API;
