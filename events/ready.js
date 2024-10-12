@@ -94,7 +94,7 @@ module.exports = {
       "Asia/Karachi"
     );
     const job2 = new cron.CronJob(
-      "0 * * * * *",
+      "0 0 */1 * * *",
       async () => {
         try {
           const meme = await getRandomMeme();

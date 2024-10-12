@@ -1,6 +1,6 @@
 let getRandomMeme = () => {
   const url = "https://api.apileague.com/retrieve-random-meme?media-type=image";
-  const apiKey = "7bed17055e474072bca41c70b7cd1dd5";
+  const apiKey = process.env.RANDOM_MEME_API;
 
   return fetch(url, {
     method: "GET",
