@@ -49,17 +49,17 @@ module.exports = {
     // Create a reaction collector
     const filter = (reaction, user) =>
       reaction.emoji.name === reactionEmoji && !user.bot;
-    const collector = message.createReactionCollector({ filter, time: 5000 }); // Collect for 60 seconds
+    const collector = message.createReactionCollector({ filter, time: 60000 }); // Collect for 60 seconds
 
     // Log "10 seconds remaining" when there are 10 seconds left
-    // setTimeout(() => {
-    //   // Create an embed using EmbedBuilder
-    //   const five_seconds_embed = new EmbedBuilder()
-    //     .setTitle("Join Before The Time Runs Out")
-    //     .setDescription("10 Seconds Remaining!!!")
-    //     .setColor(0x24a5c5);
-    //   interaction.followUp({ embeds: [five_seconds_embed], fetchReply: true });
-    // }, 50000); // 10 seconds delay (65000 - 50000 = 10000 ms)
+    setTimeout(() => {
+      // Create an embed using EmbedBuilder
+      const five_seconds_embed = new EmbedBuilder()
+        .setTitle("Join Before The Time Runs Out")
+        .setDescription("10 Seconds Remaining!!!")
+        .setColor(0x24a5c5);
+      interaction.followUp({ embeds: [five_seconds_embed], fetchReply: true });
+    }, 50000); // 10 seconds delay (65000 - 50000 = 10000 ms)
 
     collector.on("collect", (reaction, user) => {
       if (!participants.includes(user.id)) {
