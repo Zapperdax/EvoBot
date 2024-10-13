@@ -40,8 +40,10 @@ module.exports = {
           // Update users with 'extraWeeks' less than or equal to 0 to get 10% more reduction
           await User.updateMany(
             { extraWeeks: { $lte: 0 } },
-            { $inc: { amount: -(weeklyDonation * 0.15) } },
-            { $set: { donated: false} }
+            {
+              $inc: { amount: -(weeklyDonation * 0.15) }, // Apply 15% reduction
+              $set: { donated: false } // Set 'donated' to false
+            }
           );
 
           // Update 'amount' and 'extraWeeks' fields for all users
