@@ -28,17 +28,17 @@ module.exports = {
     await message.react(reactionEmoji);
 
     // Array to store users who react
-    let participants = [
-      "796707183332556830",
-      "552678985859989506",
-      "821036826915635201",
-      "329101548397264896",
-      "231432639196823552",
-      "761651894304768010",
-      "732550798084407296",
-      "316149143078961152",
-    ];
-    // let participants = [];
+    // let participants = [
+    //   "796707183332556830",
+    //   "552678985859989506",
+    //   "821036826915635201",
+    //   "329101548397264896",
+    //   "231432639196823552",
+    //   "761651894304768010",
+    //   "732550798084407296",
+    //   "316149143078961152",
+    // ];
+    let participants = [];
 
     // Array of participants who lost
     let defeatedParticipants = [];
@@ -178,8 +178,8 @@ module.exports = {
         }
 
         update_embed.addFields({
-          name: `Round ${roundsCount}`,
-          value: "Celestials Status",
+          name: `Round ${roundsCount} Status`,
+          value: "",
         });
 
         update_embed.addFields({
