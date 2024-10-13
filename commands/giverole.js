@@ -25,7 +25,7 @@ module.exports = {
     ),
   async execute(interaction) {
     await interaction.deferReply();
-    const roleName = "Admin";
+    const roleName = "Eclipse Overseer";
 
     const role = interaction.member.roles.cache.find(
       (r) => r.name === roleName

@@ -28,7 +28,7 @@ async function addOrUpdateComp(interaction, cardName, action) {
       await interaction.reply("Please provide the raid comps for this car.");
     }
 
-    await interaction.followUp("Please provide the raid comps for this card.")
+    await interaction.followUp("Please provide the raid comps for this card.");
 
     const compGuideMessage = await interaction.channel.awaitMessages({
       filter,
@@ -59,7 +59,9 @@ async function addOrUpdateComp(interaction, cardName, action) {
       });
 
       await newComp.save();
-      await interaction.followUp(`Card '${newComp.cardName}' added successfully!`);
+      await interaction.followUp(
+        `Card '${newComp.cardName}' added successfully!`
+      );
     } else if (action === "update") {
       const updatedComp = await Comp.findOneAndUpdate(
         { cardName },
@@ -70,7 +72,9 @@ async function addOrUpdateComp(interaction, cardName, action) {
       if (updatedComp) {
         await interaction.followUp(`Card '${cardName}' updated successfully!`);
       } else {
-        await interaction.followUp(`No Card found with the name '${cardName}'.`);
+        await interaction.followUp(
+          `No Card found with the name '${cardName}'.`
+        );
       }
     } else {
       await interaction.followUp(`Invalid action specified.`);
@@ -103,7 +107,7 @@ module.exports = {
         .setRequired(true)
     ),
   async execute(interaction) {
-    const roleName = "donation-tracker";
+    const roleName = "Eclipse Overseer";
     const role = interaction.member.roles.cache.find(
       (r) => r.name === roleName
     );

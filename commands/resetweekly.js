@@ -12,7 +12,7 @@ module.exports = {
     .setName("resetweekly")
     .setDescription("Resets Everyone's Weekly Donation"),
   async execute(interaction) {
-    const roleName = "Admin";
+    const roleName = "Eclipse Overseer";
 
     const role = interaction.member.roles.cache.find(
       (r) => r.name === roleName

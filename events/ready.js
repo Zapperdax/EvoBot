@@ -1,9 +1,10 @@
 const { Events } = require("discord.js");
 const cron = require("cron");
 const User = require("../Model/userModel");
-const {config} = require("../config.js");
+const { config } = require("../config.js");
 const Donation = require("../Model/donationModel");
-const getRandomMeme  = require("./functions/memeapi.js");
+const getRandomMeme = require("./functions/memeapi.js");
+const getRandomJoke = require("./functions/jokesapi.js");
 
 module.exports = {
   name: Events.ClientReady,
@@ -13,6 +14,7 @@ module.exports = {
 
     const channel = client.channels.cache.get(config.donationChannelId);
     const memeChannelId = client.channels.cache.get(config.memeChannelId);
+    const generalChannelId = client.channels.cache.get(config.generalChannelId);
     if (!channel) {
       console.log("No Channel Found");
       return;
@@ -37,12 +39,19 @@ module.exports = {
             );
           }
 
-          // Update users with 'extraWeeks' less than or equal to 0 to get 10% more reduction
+          // Update users with 'extraWeeks' less than 0 to get 10% more reduction
+          await User.updateMany(
+            { extraWeeks: { $lt: 0 } },
+            {
+              $inc: { amount: -(weeklyDonation * 0.15) }, // Apply 15% reduction
+            }
+          );
+
+          // Update users with 'extraWeeks' less than or equal to 0 to have their donated value to false
           await User.updateMany(
             { extraWeeks: { $lte: 0 } },
             {
-              $inc: { amount: -(weeklyDonation * 0.15) }, // Apply 15% reduction
-              $set: { donated: false } // Set 'donated' to false
+              $set: { donated: false }, // Set 'donated' to false
             }
           );
 
@@ -69,7 +78,7 @@ module.exports = {
         const nonDonatedUsers = await User.find({ donated: false });
         if (nonDonatedUsers.length > 0) {
           const promises = nonDonatedUsers.map(async (user) => {
-            try{
+            try {
               const userId = user.id;
               const userToDm = await client.users.fetch(userId);
               const dmChannel = await userToDm.createDM();
@@ -96,6 +105,7 @@ module.exports = {
       true,
       "Asia/Karachi"
     );
+
     const job2 = new cron.CronJob(
       "0 0 */1 * * *",
       async () => {
@@ -112,8 +122,26 @@ module.exports = {
       "Asia/Karachi"
     );
 
+    const job3 = new cron.CronJob(
+      "0 0 */1 * * *",
+      async () => {
+        try {
+          const joke = await getRandomJoke();
+          generalChannelId.send(joke.setup);
+          generalChannelId.send(joke.punchline);
+          console.log(joke);
+        } catch (err) {
+          console.error(err);
+        }
+      },
+      null,
+      true,
+      "Asia/Karachi"
+    );
+
     job0.start();
     job1.start();
     job2.start();
+    job3.start();
   },
 };
