@@ -179,7 +179,7 @@ module.exports = {
 
         update_embed.addFields({
           name: `Round ${roundsCount} Status`,
-          value: "",
+          value: "Below Is The Status Of Celestials!",
         });
 
         update_embed.addFields({

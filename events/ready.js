@@ -123,7 +123,7 @@ module.exports = {
     );
 
     const job3 = new cron.CronJob(
-      "0 0 */1 * * *",
+      "0 0 */3 * * *",
       async () => {
         try {
           const joke = await getRandomJoke();
