@@ -29,14 +29,14 @@ module.exports = {
 
     // Array to store users who react
     // let participants = [
-    //   "796707183332556830",
-    //   "552678985859989506",
-    //   "821036826915635201",
-    //   "329101548397264896",
-    //   "231432639196823552",
-    //   "761651894304768010",
-    //   "732550798084407296",
-    //   "316149143078961152",
+    //   { userId: "796707183332556830", kills: 0, revives: 0 },
+    //   { userId: "552678985859989506", kills: 0, revives: 0 },
+    //   { userId: "821036826915635201", kills: 0, revives: 0 },
+    //   { userId: "329101548397264896", kills: 0, revives: 0 },
+    //   { userId: "231432639196823552", kills: 0, revives: 0 },
+    //   { userId: "761651894304768010", kills: 0, revives: 0 },
+    //   { userId: "732550798084407296", kills: 0, revives: 0 },
+    //   { userId: "316149143078961152", kills: 0, revives: 0 },
     // ];
     let participants = [];
 
@@ -62,8 +62,16 @@ module.exports = {
     }, 50000); // 10 seconds delay (65000 - 50000 = 10000 ms)
 
     collector.on("collect", (reaction, user) => {
-      if (!participants.includes(user.id)) {
-        participants.push(user.id); // Add user ID to participants array
+      // Check if the user is already in the participants array
+      let participant = participants.find((p) => p.userId === user.id);
+
+      // If the user is not found, add them with 0 kills and 0 revives
+      if (!participant) {
+        participants.push({
+          userId: user.id,
+          kills: 0, // Initial kill count
+          revives: 0, // Initial revive count
+        });
       }
     });
 
@@ -79,7 +87,9 @@ module.exports = {
         .setTitle("Celestial's Clash Participants")
         .setDescription(
           participants.length > 0
-            ? participants.map((participant) => `<@!${participant}>`).join("\n") // Display each participant on a new line
+            ? participants
+                .map((participant) => `<@!${participant.userId}>`)
+                .join("\n") // Display each participant on a new line
             : "No participants joined." // Handle case if no one joins
         )
         .setColor(0x24a5c5);
@@ -89,6 +99,9 @@ module.exports = {
 
       // Continue the battle until only one participant is left
       while (participants.length > 1) {
+        // If revival was done mark it true
+        let showReviveEmbed = 0;
+
         await new Promise((resolve) => setTimeout(resolve, 6500)); // 5 second delay between battles
         // Randomly select the first participant
         const firstIndex = Math.floor(Math.random() * participants.length);
@@ -101,6 +114,9 @@ module.exports = {
         const secondIndex = Math.floor(Math.random() * participants.length);
         const secondParticipant = participants[secondIndex];
 
+        // Add +1 kill for the second participant
+        participants[secondIndex].kills += 1;
+
         // Create an embed for the battle outcome
         const battle_embed = new EmbedBuilder()
           .setTitle(`Round ${roundsCount}`)
@@ -108,6 +124,10 @@ module.exports = {
 
         const update_embed = new EmbedBuilder()
           .setTitle("Status Of The Event!")
+          .setColor(0x24a5c5);
+
+        const revival_embed = new EmbedBuilder()
+          .setTitle("Celestials Are Being Revived")
           .setColor(0x24a5c5);
 
         // Select a random battlePhrase
@@ -128,8 +148,8 @@ module.exports = {
 
         // Perform replacements in separate steps for clarity
         let finalText = battleText
-          .replace(/{player1}/g, `<@!${secondParticipant}>`)
-          .replace(/{player2}/g, `<@!${firstParticipant}>`);
+          .replace(/{player1}/g, `<@!${secondParticipant.userId}>`)
+          .replace(/{player2}/g, `<@!${firstParticipant.userId}>`);
 
         // Construct the value field
         battle_embed.addFields({
@@ -141,6 +161,8 @@ module.exports = {
         defeatedParticipants.push(firstParticipant);
 
         if (Math.random() < 0.1 && defeatedParticipants.length > 0) {
+          //Revival chance happened mark it true
+          showReviveEmbed = 1;
           // Revive a random number of participants from the defeated participants array
           let reviveParticipantsLength = Math.floor(
             Math.random() * defeatedParticipants.length
@@ -157,6 +179,10 @@ module.exports = {
             const reviveIndex = Math.floor(
               Math.random() * defeatedParticipants.length
             );
+
+            // Add +1 revive for the participant
+            defeatedParticipants[reviveIndex].revives += 1;
+
             const revivedParticipant = defeatedParticipants[reviveIndex];
 
             // Move the revive participant back to participants
@@ -167,10 +193,10 @@ module.exports = {
 
             let reviveTextFinal = reviveText.replace(
               "{player1}",
-              `<@!${revivedParticipant}>`
+              `<@!${revivedParticipant.userId}>`
             );
 
-            battle_embed.addFields({
+            revival_embed.addFields({
               name: "Revival Of A Celestial",
               value: reviveTextFinal,
             });
@@ -183,22 +209,28 @@ module.exports = {
         });
 
         update_embed.addFields({
-          name: `Alive Celestials`,
+          name: `Celestials Alive`,
           value:
             participants.length > 0
               ? participants
-                  .map((participant) => `<@!${participant}>`)
+                  .map(
+                    (participant) =>
+                      `<@!${participant.userId}>\n-# Kills: ${participant.kills}\n-# Revived: ${participant.revives} Times`
+                  )
                   .join("\n") // Display each participant on a new line
               : "None", // Handle case if no one joins
           inline: true,
         });
 
         update_embed.addFields({
-          name: `Defeated Celestials`,
+          name: `Celestials Defeated`,
           value:
             defeatedParticipants.length > 0
               ? defeatedParticipants
-                  .map((participant) => `<@!${participant}>`)
+                  .map(
+                    (participant) =>
+                      `<@!${participant.userId}>\n-# Kills: ${participant.kills}\n-# Revived: ${participant.revives} Times`
+                  )
                   .join("\n") // Display each participant on a new line
               : "None", // Handle case if no one joins
           inline: true,
@@ -206,6 +238,16 @@ module.exports = {
 
         // Send the battle outcome as a follow-up message
         interaction.followUp({ embeds: [battle_embed] });
+
+        if (
+          showReviveEmbed === 1 &&
+          revival_embed.data.fields &&
+          revival_embed.data.fields.length > 0
+        ) {
+          await new Promise((resolve) => setTimeout(resolve, 1000)); // 1 second delay between battles
+          // Send Revived participants embed
+          interaction.followUp({ embeds: [revival_embed] });
+        }
 
         await new Promise((resolve) => setTimeout(resolve, 6500)); // 5 second delay between battles
         interaction.followUp({ embeds: [update_embed] });
@@ -220,7 +262,7 @@ module.exports = {
         const winner_embed = new EmbedBuilder()
           .setTitle("Winner!")
           .setDescription(
-            `<@!${winner}> Is The Last Person Standing And Wins The Celestial's Clash!`
+            `<@!${winner.userId}> Is The Last Person Standing And Wins The Celestial's Clash!!!\n### ${winner.kills} Kills And ${winner.revives} Revival(s).`
           )
           .setColor(0x00ff00);
 

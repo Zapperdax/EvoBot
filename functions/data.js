@@ -321,6 +321,126 @@ let reviveTexts = [
   {
     text: "{player1} revived after reading the motivational quote on their coffee cup. They are now unstoppable (and a little caffeinated)!",
   },
+  {
+    text: "{player1} rejoined the battle after realizing they forgot to turn off the bathroom light!",
+  },
+  {
+    text: "With a surge of adrenaline (and maybe some sugar), {player1} is back on their feet, ready to cause chaos again!",
+  },
+  {
+    text: "A mysterious force (probably their cat) has revived {player1}, who’s now ready to fight with more determination!",
+  },
+  {
+    text: "{player1} woke up from a power nap, recharged and confused, but definitely back!",
+  },
+  {
+    text: "After a brief existential crisis, {player1} decided that the only thing left to do is… get back into the fight!",
+  },
+  {
+    text: "Summoned back to life by an overly enthusiastic cheerleader, {player1} is ready to show what they’ve got!",
+  },
+  {
+    text: "{player1} respawned with a dramatic entrance, cape swirling and theme music playing in the background.",
+  },
+  {
+    text: "{player1} was revived after remembering they hadn’t finished that last episode of their favorite show!",
+  },
+  {
+    text: "Fueled by pure stubbornness and a dash of sarcasm, {player1} is back in action!",
+  },
+  {
+    text: "A random motivational quote on social media brought {player1} back to life, slightly inspired and very ready!",
+  },
+  {
+    text: "Revived by the sheer power of their Wi-Fi reconnecting, {player1} is back and loading faster than ever!",
+  },
+  {
+    text: "After receiving a critical firmware update, {player1} rebooted with new energy and slightly more bugs!",
+  },
+  {
+    text: "{player1} came back to life after finding out there’s still pizza in the fridge!",
+  },
+  {
+    text: "{player1} respawned after an epic power-up sequence, complete with special effects and a slow-motion scene!",
+  },
+  {
+    text: "A quick boost from a mysterious energy drink has revived {player1}, now ready to fight and bounce off walls!",
+  },
+  {
+    text: "After a dramatic pause, {player1} reappeared with a witty one-liner and a smirk.",
+  },
+  {
+    text: "{player1} came back after remembering they left something important unfinished… like this battle!",
+  },
+  {
+    text: "{player1} revived with a flash of lightning and a lot of over-the-top special effects.",
+  },
+  {
+    text: "With the power of nostalgia for their favorite childhood game, {player1} respawned, controller in hand!",
+  },
+  {
+    text: "{player1} jumped back into action after realizing they missed out on all the drama while they were down!",
+  },
+  {
+    text: "A glitch in the matrix brought {player1} back, now questioning reality but still ready to fight!",
+  },
+  {
+    text: "{player1} respawned after finally deciphering that mysterious loading screen tip!",
+  },
+  {
+    text: "Revived by the smell of fresh coffee, {player1} is back, hyper-caffeinated and jittery!",
+  },
+  {
+    text: "A sudden epiphany about life (or maybe just battle strategies) brought {player1} back to life!",
+  },
+  {
+    text: "{player1} popped back up like a bad Wi-Fi connection—glitchy, but alive!",
+  },
+  {
+    text: "After a quick existential reboot, {player1} is back with a vengeance (and a slightly better plan)!",
+  },
+  {
+    text: "{player1} revived thanks to a life-saving meme—because laughter is the best medicine!",
+  },
+  {
+    text: "With the power of a plot twist, {player1} is back, surprising everyone including themselves!",
+  },
+  {
+    text: "{player1} respawned after hearing a distant ice cream truck and deciding life’s too short to stay down!",
+  },
+  {
+    text: "{player1} returned with a dramatic flourish, looking a bit more dramatic than necessary!",
+  },
+  {
+    text: "A brief moment of deep breathing (and possibly meditation) brought {player1} back with renewed focus!",
+  },
+  {
+    text: "{player1} woke up from the dead like they hit the snooze button one too many times.",
+  },
+  {
+    text: "Fueled by pure spite, {player1} is back and more determined than ever to win!",
+  },
+  {
+    text: "After remembering the snack they left behind, {player1} is back, slightly hungry but fully revived!",
+  },
+  {
+    text: "{player1} revived after receiving a motivational text from their mom. How could they not?",
+  },
+  {
+    text: "With a dramatic eye roll, {player1} is back, annoyed but ready to finish what they started.",
+  },
+  {
+    text: "A surprise plot twist in their favorite show brought {player1} back, eager to get back into the action!",
+  },
+  {
+    text: "{player1} respawned after hearing that their rival is still standing. This isn’t over yet!",
+  },
+  {
+    text: "{player1} revived after a long shower thought, and now they’ve got a brilliant new strategy!",
+  },
+  {
+    text: "Summoned back by the sound of a loot box opening, {player1} is ready to dive in again!",
+  },
 ];
 
 let battleTitles = [
