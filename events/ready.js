@@ -129,7 +129,6 @@ module.exports = {
           const joke = await getRandomJoke();
           generalChannelId.send(joke.setup);
           generalChannelId.send(joke.punchline);
-          console.log(joke);
         } catch (err) {
           console.error(err);
         }

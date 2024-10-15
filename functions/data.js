@@ -476,4 +476,24 @@ let battleTitles = [
   "Universal Uprising",
 ];
 
-module.exports = { battleTexts, reviveTexts, battleTitles };
+imageLinks = [
+  "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTkVYXMUY3gTovRG21LL3EY1VF56XZpqobUxA&s",
+  "https://i1.sndcdn.com/artworks-000230779891-yxhs7u-t500x500.jpg",
+  "https://static1.moviewebimages.com/wordpress/wp-content/uploads/2022/06/boruto-episode-65-naruto-sasuke-fight-1123512.jpg",
+  "https://publish.one37pm.net/wp-content/uploads/2023/02/kakarot2.jpeg?fit=1360%2C765",
+  "https://imgix.ranker.com/list_img_v2/2997/3142997/original/3142997-u1?w=817&h=427&fm=jpg&q=50&fit=crop",
+  "https://twinfinite.net/wp-content/uploads/2022/07/demon-slayer.jpg?fit=1200%2C675",
+];
+
+reviveLinks = [
+  "https://i.pinimg.com/736x/78/d0/8b/78d08be1916f652e29eb9318407150f9.jpg",
+  "https://images-ng.pixai.art/images/orig/e5d9531f-69ef-49a3-9dd0-5098a932a6f6",
+];
+
+module.exports = {
+  battleTexts,
+  reviveTexts,
+  battleTitles,
+  imageLinks,
+  reviveLinks,
+};
