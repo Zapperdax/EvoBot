@@ -30,17 +30,70 @@ module.exports = {
     await message.react(reactionEmoji);
 
     // Array to store users who react
-    let participants = [
-      { userId: "796707183332556830", kills: 0, revives: 0 },
-      { userId: "552678985859989506", kills: 0, revives: 0 },
-      { userId: "821036826915635201", kills: 0, revives: 0 },
-      { userId: "329101548397264896", kills: 0, revives: 0 },
-      { userId: "231432639196823552", kills: 0, revives: 0 },
-      { userId: "761651894304768010", kills: 0, revives: 0 },
-      { userId: "732550798084407296", kills: 0, revives: 0 },
-      { userId: "316149143078961152", kills: 0, revives: 0 },
-    ];
-    // let participants = [];
+    // let participants = [
+    //   { userId: "796707183332556830", username: "yume", kills: 0, revives: 0 },
+    //   {
+    //     userId: "552678985859989506",
+    //     username: "sayuki",
+    //     kills: 0,
+    //     revives: 0,
+    //   },
+    //   { userId: "821036826915635201", username: "dazai", kills: 0, revives: 0 },
+    //   {
+    //     userId: "329101548397264896",
+    //     username: "dev__il",
+    //     kills: 0,
+    //     revives: 0,
+    //   },
+    //   {
+    //     userId: "231432639196823552",
+    //     username: "devlank",
+    //     kills: 0,
+    //     revives: 0,
+    //   },
+    //   {
+    //     userId: "761651894304768010",
+    //     username: "hacker",
+    //     kills: 0,
+    //     revives: 0,
+    //   },
+    //   { userId: "732550798084407296", username: "hals", kills: 0, revives: 0 },
+    //   { userId: "316149143078961152", username: "Miyu", kills: 0, revives: 0 },
+    //   { userId: "796707183332556831", username: "yumee", kills: 0, revives: 0 },
+    //   {
+    //     userId: "552678985859989507",
+    //     username: "sayukii",
+    //     kills: 0,
+    //     revives: 0,
+    //   },
+    //   {
+    //     userId: "821036826915635202",
+    //     username: "dazaii",
+    //     kills: 0,
+    //     revives: 0,
+    //   },
+    //   {
+    //     userId: "329101548397264897",
+    //     username: "dev__ill",
+    //     kills: 0,
+    //     revives: 0,
+    //   },
+    //   {
+    //     userId: "231432639196823553",
+    //     username: "devlankk",
+    //     kills: 0,
+    //     revives: 0,
+    //   },
+    //   {
+    //     userId: "761651894304768011",
+    //     username: "hackerr",
+    //     kills: 0,
+    //     revives: 0,
+    //   },
+    //   { userId: "732550798084407297", username: "halss", kills: 0, revives: 0 },
+    //   { userId: "316149143078961153", username: "Miyuu", kills: 0, revives: 0 },
+    // ];
+    let participants = [];
 
     // Array of participants who lost
     let defeatedParticipants = [];
@@ -71,6 +124,7 @@ module.exports = {
       if (!participant) {
         participants.push({
           userId: user.id,
+          username: user.username,
           kills: 0, // Initial kill count
           revives: 0, // Initial revive count
         });
@@ -90,7 +144,7 @@ module.exports = {
         .setDescription(
           participants.length > 0
             ? participants
-                .map((participant) => `<@!${participant.userId}>`)
+                .map((participant) => `**${participant.username}**`)
                 .join("\n") // Display each participant on a new line
             : "No participants joined." // Handle case if no one joins
         )
@@ -160,12 +214,12 @@ module.exports = {
 
         // Perform replacements in separate steps for clarity
         let finalText = battleText
-          .replace(/{player1}/g, `<@!${secondParticipant.userId}>`)
-          .replace(/{player2}/g, `<@!${firstParticipant.userId}>`);
+          .replace(/{player1}/g, `**${secondParticipant.username}**`)
+          .replace(/{player2}/g, `**${firstParticipant.username}**`);
 
         // Construct the value field
         battle_embed.addFields({
-          name: battleTitles[randomBattleTitleIndex],
+          name: `${battleTitles[randomBattleTitleIndex]}`,
           value: finalText,
         });
 
@@ -205,7 +259,7 @@ module.exports = {
 
             let reviveTextFinal = reviveText.replace(
               "{player1}",
-              `<@!${revivedParticipant.userId}>`
+              `**${revivedParticipant.username}**`
             );
 
             revival_embed.addFields({
@@ -247,7 +301,7 @@ module.exports = {
         const winner_embed = new EmbedBuilder()
           .setTitle("Winner!")
           .setDescription(
-            `<@!${winner.userId}> Is The Last Person Standing And Wins The Celestial's Clash!!!\n### ${winner.kills} Kill(s) And ${winner.revives} Revival(s).`
+            `**${winner.username}** Is The Last Person Standing And Wins The Celestial's Clash!!!\n### ${winner.kills} Kill(s) And ${winner.revives} Revival(s).`
           )
           .setColor(0x00ff00);
 
@@ -265,7 +319,7 @@ module.exports = {
             description: chunk
               .map(
                 (participant) =>
-                  `<@!${participant.userId}> **Kills:** ${participant.kills} **Revived:** ${participant.revives} Times`
+                  `**${participant.username}**\n-# Kills: **${participant.kills}** Revived: **${participant.revives}** Times`
               )
               .join("\n"), // Display each participant on a new line
             // inline: true,
@@ -276,7 +330,7 @@ module.exports = {
         await interaction.channel.send("# Statistics");
 
         for (const embed of allEmbeds) {
-          await interaction.channel.send(`${embed.description} `);
+          await interaction.channel.send({ embeds: [embed] });
         }
       } else {
         // If no participants remain, display an appropriate message
