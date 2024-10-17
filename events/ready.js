@@ -128,7 +128,7 @@ module.exports = {
         try {
           const joke = await getRandomJoke();
           generalChannelId.send(joke.setup);
-          generalChannelId.send(joke.punchline);
+          generalChannelId.send(`||${joke.punchline}||`);
         } catch (err) {
           console.error(err);
         }
