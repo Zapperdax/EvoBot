@@ -5,6 +5,29 @@ const path = require("path");
 const filePath = path.join(__dirname, "deceptionordeceivedata.json");
 const prizesFilePath = path.join(__dirname, "prizes.json");
 
+const insertPrizeBack = (prize) => {
+  fs.readFile(prizesFilePath, "utf8", (err, data) => {
+    if (err) {
+      console.error("Error reading file: ", err);
+      return;
+    }
+    try {
+      const prizes = JSON.parse(data); // Parse the JSON data
+      const randomPrizeIndex = Math.floor(Math.random() * (prizes.length + 1)); // Get a random index including last index
+      prizes.splice(randomPrizeIndex, 0, prize);
+      const updatedPrizes = JSON.stringify(prizes, null, 2);
+      // Write the updated JSON back to the file
+      fs.writeFile(prizesFilePath, updatedPrizes, "utf8", (err) => {
+        if (err) {
+          console.error("Error writing file:", err);
+        }
+      });
+    } catch (parseError) {
+      console.error("Error parsing JSON data: ", parseError);
+    }
+  });
+};
+
 const getPrize = () => {
   return new Promise((resolve, reject) => {
     fs.readFile(prizesFilePath, "utf8", (err, data) => {
@@ -42,6 +65,7 @@ const updateUserData = (userId, prize) => {
       userId: userId,
       commandUsed: 0, // Initialize commandUsed
       prizesWon: [],
+      commandUsedTime: 0,
     };
 
     fs.readFile(filePath, "utf8", (err, data) => {
@@ -72,10 +96,16 @@ const updateUserData = (userId, prize) => {
       let userExists = false;
       for (let user of jsonData) {
         if (user.userId === userId) {
-          user.commandUsed += 1; // Increment commandUsed
-          user.prizesWon.push(prize);
+          if (user.commandUsedTime + 7200 <= Math.floor(Date.now() / 1000)) {
+            user.commandUsed += 1; // Increment commandUsed
+            user.prizesWon.push(prize);
+            user.commandUsedTime = Math.floor(Date.now() / 1000);
+          } else {
+            insertPrizeBack(prize);
+          }
           dataToReturn.commandUsed = user.commandUsed; // Update commandUsed
           dataToReturn.prizesWon = user.prizesWon;
+          dataToReturn.commandUsedTime = user.commandUsedTime;
           userExists = true;
           break;
         }
@@ -85,10 +115,12 @@ const updateUserData = (userId, prize) => {
       if (!userExists) {
         dataToReturn.commandUsed = 1; // Set commandUsed to 1 for new user
         dataToReturn.prizesWon.push(prize); // Push the prize into prizesWon for new user
+        dataToReturn.commandUsedTime = Math.floor(Date.now() / 1000);
         jsonData.push({
           userId: userId,
           commandUsed: dataToReturn.commandUsed,
           prizesWon: dataToReturn.prizesWon,
+          commandUsedTime: dataToReturn.commandUsedTime,
         });
       }
 

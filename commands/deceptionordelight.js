@@ -15,7 +15,11 @@ module.exports = {
           .map((prize, i) => `${i + 1}) ${prize}`)
           .join("\n");
         interaction.reply(
-          `Hello, <@!${data.userId}>! You've Used This Command ${data.commandUsed} Times! And Have The Following Rewards\n${prizesList}`
+          `Hello, <@!${data.userId}>! You've Used This Command ${
+            data.commandUsed
+          } Times! And Have The Following Rewards\n${prizesList}\nYou Can Use This Command Again In ${
+            data.commandUsedTime + 7200 - Math.floor(Date.now() / 1000)
+          } Seconds!`
         );
       });
     });
