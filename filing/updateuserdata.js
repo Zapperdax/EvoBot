@@ -4,6 +4,29 @@ const path = require("path");
 // Define the path to the file inside the "filing" folder
 const filePath = path.join(__dirname, "deceptionordeceivedata.json");
 const prizesFilePath = path.join(__dirname, "prizes.json");
+const prizesConsumedPath = path.join(__dirname, "prizesconsumed.json");
+
+const insertIntoPrizesConsumedFile = (prize, userId) => {
+  fs.readFile(prizesConsumedPath, "utf8", (err, data) => {
+    if (err) {
+      console.error("Error reading file: ", err);
+      return;
+    }
+    try {
+      const prizes = JSON.parse(data); // Parse the JSON data
+      prizes.push(`${userId} ${prize}`);
+      const updatedPrizes = JSON.stringify(prizes, null, 2);
+      // Write the updated JSON back to the file
+      fs.writeFile(prizesConsumedPath, updatedPrizes, "utf8", (err) => {
+        if (err) {
+          console.error("Error writing file:", err);
+        }
+      });
+    } catch (parseError) {
+      console.error("Error parsing JSON data: ", parseError);
+    }
+  });
+};
 
 const insertPrizeBack = (prize) => {
   fs.readFile(prizesFilePath, "utf8", (err, data) => {
@@ -96,10 +119,14 @@ const updateUserData = (userId, prize) => {
       let userExists = false;
       for (let user of jsonData) {
         if (user.userId === userId) {
-          if (user.commandUsedTime + 7200 <= Math.floor(Date.now() / 1000)) {
+          if (
+            user.commandUsedTime + 7200 <= Math.floor(Date.now() / 1000) &&
+            user.commandUsed < 5
+          ) {
             user.commandUsed += 1; // Increment commandUsed
             user.prizesWon.push(prize);
             user.commandUsedTime = Math.floor(Date.now() / 1000);
+            insertIntoPrizesConsumedFile(prize, userId);
           } else {
             insertPrizeBack(prize);
           }
@@ -116,6 +143,7 @@ const updateUserData = (userId, prize) => {
         dataToReturn.commandUsed = 1; // Set commandUsed to 1 for new user
         dataToReturn.prizesWon.push(prize); // Push the prize into prizesWon for new user
         dataToReturn.commandUsedTime = Math.floor(Date.now() / 1000);
+        insertIntoPrizesConsumedFile(prize, userId);
         jsonData.push({
           userId: userId,
           commandUsed: dataToReturn.commandUsed,

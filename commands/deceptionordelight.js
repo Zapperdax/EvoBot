@@ -1,4 +1,4 @@
-const { SlashCommandBuilder } = require("discord.js");
+const { SlashCommandBuilder, EmbedBuilder } = require("discord.js");
 const { updateUserData, getPrize } = require("../filing/updateuserdata.js");
 
 module.exports = {
@@ -9,18 +9,36 @@ module.exports = {
     // Get the user who invoked the command
     const user = interaction.user;
 
+    const prizeEmbed = new EmbedBuilder()
+      .setTitle("Your Rewards And Quests")
+      .setColor(0x24a5c5);
+
     getPrize().then((data) => {
       updateUserData(user.id, data).then((data) => {
         const prizesList = data.prizesWon
-          .map((prize, i) => `${i + 1}) ${prize}`)
+          .map((prize, i) => `**${i + 1})** ${prize}`)
           .join("\n");
-        interaction.reply(
-          `Hello, <@!${data.userId}>! You've Used This Command ${
-            data.commandUsed
-          } Times! And Have The Following Rewards\n${prizesList}\nYou Can Use This Command Again In ${
-            data.commandUsedTime + 7200 - Math.floor(Date.now() / 1000)
-          } Seconds!`
+
+        prizeEmbed.addFields(
+          {
+            name:
+              data.commandUsed < 5
+                ? `Time To Unravel Your Prize Or Embark On A Quest, **${user.username}**!`
+                : `You've Received The Following Prizes`,
+            value: prizesList || "No prizes yet", // In case prizesList is empty
+          },
+          {
+            name:
+              data.commandUsed < 5 ? `Cooldown` : `Command Usage Limit Reached`,
+            value:
+              data.commandUsed < 5
+                ? `You Can Use This Command Again In ${
+                    data.commandUsedTime + 7200 - Math.floor(Date.now() / 1000)
+                  } Seconds!`
+                : `You've Reached The Maximum Number Of Times You Can Use The command!`,
+          }
         );
+        interaction.reply({ embeds: [prizeEmbed] });
       });
     });
   },
