@@ -44,7 +44,6 @@ module.exports = {
     }
 
     const totalPrizesConsumed = await getPrizes();
-    console.log(totalPrizesConsumed);
 
     const itemsPerPage = 10;
     let currentPage = 1;
