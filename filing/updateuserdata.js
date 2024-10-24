@@ -120,8 +120,8 @@ const updateUserData = (userId, prize) => {
       for (let user of jsonData) {
         if (user.userId === userId) {
           if (
-            user.commandUsedTime + 7200 <= Math.floor(Date.now() / 1000) &&
-            user.commandUsed < 5
+            user.commandUsedTime + 43200 <= Math.floor(Date.now() / 1000) &&
+            user.commandUsed < 10
           ) {
             user.commandUsed += 1; // Increment commandUsed
             user.prizesWon.push(prize);
