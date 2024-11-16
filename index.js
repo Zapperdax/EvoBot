@@ -220,7 +220,6 @@ client.on("messageCreate", async (message) => {
   }
 });
 
-
 mongoose.set("strictQuery", true);
 
 mongoose.connect(process.env.MONGODB_URL, () => {
