@@ -13,13 +13,14 @@ module.exports = {
       option.setName("amount").setDescription("Add Amount").setRequired(true)
     ),
   async execute(interaction) {
-    const roleName = "Eclipse Overseer";
+    const roleNames = ["Eclipse Overseer", "Upper-Moons"]; // Roles to check
 
-    const role = interaction.member.roles.cache.find(
-      (r) => r.name === roleName
+    // Check if the user has any of the required roles
+    const hasRequiredRole = interaction.member.roles.cache.some((role) =>
+      roleNames.includes(role.name)
     );
 
-    if (!role || !interaction.member.roles.cache.has(role.id)) {
+    if (!hasRequiredRole) {
       await interaction.reply({
         content: `You Don't Have Permission To Use This Command`,
         ephemeral: true,

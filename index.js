@@ -11,10 +11,12 @@ const path = require("node:path");
 const mongoose = require("mongoose");
 const User = require("./Model/userModel");
 const Donation = require("./Model/donationModel");
+const Count = require("./Model/CountModel.js");
 const { config } = require("./config.js");
 const {
   isExpressionValid,
   calculateExpression,
+  handleRaidSpawn
 } = require("./functions/functions.js");
 
 const token = process.env.BOT_TOKEN;
@@ -156,8 +158,7 @@ client.on("messageCreate", async (message) => {
               new Intl.NumberFormat().format(amount).toString() +
               ` / ${new Intl.NumberFormat()
                 .format(weeklyDonation)
-                .toString()}\nStatus: ${emoji}\nExtra Weeks: ${
-                updateObject.$set.extraWeeks
+                .toString()}\nStatus: ${emoji}\nExtra Weeks: ${updateObject.$set.extraWeeks
               }`,
           })
           .setTimestamp()
@@ -177,6 +178,43 @@ client.on("messageCreate", async (message) => {
       const expression = message.content;
       calculateExpression(message, expression);
     }
+
+    if (
+      !message.author.bot &&
+      message.channelId === config.raidChannelId &&
+      message.content.includes(".rd spawn i")
+    ) {
+      // Create a filter to capture the expected bot messages
+      const filter = (botMessage) =>
+        botMessage.author.id === config.anigameBotId && // Message must be from the correct bot
+        botMessage.channelId === config.raidChannelId; // Must be in the correct channel
+
+      // Create a MessageCollector to listen for the bot's response
+      const collector = message.channel.createMessageCollector({
+        filter,
+        time: 5000, // Wait for up to 10 seconds
+      });
+
+      collector.on("collect", async (botMessage) => {
+        // Check if the bot sent the raid spawn message
+        if (botMessage.content.includes("Summoner, a Raid Boss has spawned! Check your DMs for more info!")) {
+          // Increment the raid count for the user
+          await handleRaidSpawn(message, Count);
+          collector.stop(); // Stop the collector after successfully handling the response
+        }
+        // Check if the bot sent the cooldown message
+        else if (botMessage.content.includes("This command is on cooldown")) {
+          collector.stop(); // Stop the collector if the command is on cooldown
+        }
+      });
+
+      collector.on("end", (collected, reason) => {
+        if (reason === "time") {
+          message.channel.send("No response received from the bot within the time limit.");
+        }
+      });
+    }
+
   } catch (e) {
     console.error(e);
   }
