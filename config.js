@@ -4,7 +4,7 @@ const config = {
   donationChannelId: '813262057331884032',
   generalChannelId: '794848609446789140',
   memeChannelId: '963747423119876156',
-  raidChannelId: '910778378259415050'
+  raidChannelId: '947306127677345842'
 }
 
 
