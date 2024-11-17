@@ -37,7 +37,9 @@ async function calculateExpression(message, expression) {
               })
               .addFields({
                 name: "Expression Result",
-                value: `\`\`\`${new Intl.NumberFormat().format(result).toString()}\`\`\``,
+                value: `\`\`\`${new Intl.NumberFormat()
+                  .format(result)
+                  .toString()}\`\`\``,
               })
               .setTimestamp()
               .setFooter({
@@ -82,12 +84,38 @@ async function handleRaidSpawn(message, Count) {
 
     // Save the updated record
     await userRecord.save();
-
   } catch (err) {
     console.error("Error updating raid count:", err);
     await message.channel.send("An error occurred while tracking the raid.");
   }
+}
+
+async function handleCardSpawn(userId, userName, Count) {
+  try {
+    // Find the user record or create a new one
+    let userRecord = await Count.findOne({ id: userId });
+    if (!userRecord) {
+      userRecord = new Count({
+        id: userId,
+        name: userName,
+      });
+    }
+
+    // Increment the raidsSpawnedCount
+    userRecord.cardsSpawnedCount += 1;
+    userRecord.name = userName;
+
+    // Save the updated record
+    await userRecord.save();
+  } catch (err) {
+    console.error("Error updating raid count:", err);
+    await message.channel.send("An error occurred while tracking the raid.");
+  }
+}
+
+module.exports = {
+  isExpressionValid,
+  calculateExpression,
+  handleRaidSpawn,
+  handleCardSpawn,
 };
-
-
-module.exports = { isExpressionValid, calculateExpression, handleRaidSpawn };

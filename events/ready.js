@@ -3,6 +3,7 @@ const cron = require("cron");
 const User = require("../Model/userModel");
 const { config } = require("../config.js");
 const Donation = require("../Model/donationModel");
+const Count = require("../Model/CountModel");
 const getRandomMeme = require("./functions/memeapi.js");
 const getRandomJoke = require("./functions/jokesapi.js");
 
@@ -15,6 +16,7 @@ module.exports = {
     const channel = client.channels.cache.get(config.donationChannelId);
     const memeChannelId = client.channels.cache.get(config.memeChannelId);
     const generalChannelId = client.channels.cache.get(config.generalChannelId);
+    const raidChannelId = client.channels.cache.get(config.raidChannelId);
     if (!channel) {
       console.log("No Channel Found");
       return;
@@ -138,9 +140,57 @@ module.exports = {
       "Asia/Karachi"
     );
 
+    const job4 = new cron.CronJob(
+      "0 0 9 * * SUN",
+      async () => {
+        try {
+          const top3 = await Count.aggregate([
+            {
+              $addFields: {
+                totalSpawnedCount: {
+                  $add: ["$raidsSpawnedCount", "$cardsSpawnedCount"], // Add the two fields together
+                },
+              },
+            },
+            {
+              $sort: { totalSpawnedCount: -1 }, // Sort in descending order by the total spawned count
+            },
+            {
+              $limit: 3, // Limit to the top 3 results
+            },
+          ]);
+
+          raidChannelId.send("Top 3 Contributers Of Spawns");
+          top3.forEach((user, index) => {
+            raidChannelId.send(
+              `${index + 1}: **${user.name}** - Total Spawn Count: ${
+                user.totalSpawnedCount
+              }\n`
+            );
+          });
+
+          // Update users with 'extraWeeks' less than 0 to get 10% more reduction
+          await Count.updateMany(
+            {},
+            {
+              $set: { raidsSpawnedCount: 0, cardsSpawnedCount: 0 }, // Apply 15% reduction
+            }
+          );
+
+          raidChannelId.send(`Weekly Raid and Card Spawns Have Been Reset`);
+        } catch (err) {
+          console.error(err);
+        }
+      },
+      null,
+      true,
+      "Asia/Karachi"
+    );
+
     job0.start();
     job1.start();
     job2.start();
     job3.start();
+    job4.start();
   },
 };
