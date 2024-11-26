@@ -66,6 +66,9 @@ for (const file of commandFiles) {
   }
 }
 
+// All the active collectors for raid spawns
+const activeCollectorsRaidSpawns = new Set();
+
 //To set status of bot, it gades away after some time
 client.on("ready", () => {
   client.user.setActivity("Over Clan Donations.", {
@@ -188,6 +191,14 @@ client.on("messageCreate", async (message) => {
       !message.author.bot &&
       message.content.toLowerCase().includes(".rd spawn".toLowerCase())
     ) {
+      // Check if the user already has an active collector
+      if (activeCollectorsRaidSpawns.has(message.author.id)) {
+        return;
+      }
+
+      // Add user who ran the command
+      activeCollectorsRaidSpawns.add(message.author.id);
+
       // Create a filter to capture the expected bot messages
       const filter = (botMessage) =>
         botMessage.author.id === config.anigameBotId && // Message must be from the correct bot
@@ -217,6 +228,9 @@ client.on("messageCreate", async (message) => {
       });
 
       collector.on("end", (collected, reason) => {
+        // Remove the user from the active collector set when the collector ends
+        activeCollectorsRaidSpawns.delete(message.author.id);
+
         if (reason === "time") {
           message.channel.send(
             "No response received from the bot within the time limit."
@@ -264,8 +278,6 @@ client.on("messageCreate", async (message) => {
 
           if (hasRole) {
             await handleCardSpawn(user.id, authorName, Count);
-          } else {
-            console.log("Member not in 'Evos Cult' role.");
           }
         }
       }

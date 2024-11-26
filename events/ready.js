@@ -144,7 +144,7 @@ module.exports = {
       "0 0 9 * * SUN",
       async () => {
         try {
-          const top3 = await Count.aggregate([
+          const allResults = await Count.aggregate([
             {
               $addFields: {
                 totalSpawnedCount: {
@@ -155,13 +155,12 @@ module.exports = {
             {
               $sort: { totalSpawnedCount: -1 }, // Sort in descending order by the total spawned count
             },
-            {
-              $limit: 3, // Limit to the top 3 results
-            },
           ]);
 
-          raidChannelId.send("Top 3 Contributers Of Spawns");
-          top3.forEach((user, index) => {
+          raidChannelId.send(
+            `${"<@&740824003932848199>"}, All Contributers Of Spawns, Top 3 Get Prizes`
+          );
+          allResults.forEach((user, index) => {
             raidChannelId.send(
               `${index + 1}: **${user.name}** - Total Spawn Count: ${
                 user.totalSpawnedCount
