@@ -186,7 +186,7 @@ client.on("messageCreate", async (message) => {
     if (
       message.channelId === config.raidChannelId &&
       !message.author.bot &&
-      message.content.toLowerCase().includes(".rd spawn i".toLowerCase())
+      message.content.toLowerCase().includes(".rd spawn".toLowerCase())
     ) {
       // Create a filter to capture the expected bot messages
       const filter = (botMessage) =>
@@ -196,7 +196,7 @@ client.on("messageCreate", async (message) => {
       // Create a MessageCollector to listen for the bot's response
       const collector = message.channel.createMessageCollector({
         filter,
-        time: 2000, // Wait for up to 10 seconds
+        time: 5000, // Wait for up to 10 seconds
       });
 
       collector.on("collect", async (botMessage) => {

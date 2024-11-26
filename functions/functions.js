@@ -84,6 +84,7 @@ async function handleRaidSpawn(message, Count) {
 
     // Save the updated record
     await userRecord.save();
+    await message.channel.send(`${userName}, Your Raid Count Increased By 1`);
   } catch (err) {
     console.error("Error updating raid count:", err);
     await message.channel.send("An error occurred while tracking the raid.");
