@@ -174,14 +174,14 @@ client.on("messageCreate", async (message) => {
       }
     }
 
-    // if (
-    //   !message.author.bot &&
-    //   message.content.match(/[+\-*\/^()\d\s.]/) &&
-    //   message.content.match(/[+\-*\/^()]/)
-    // ) {
-    //   const expression = message.content;
-    //   calculateExpression(message, expression);
-    // }
+    if (
+      !message.author.bot &&
+      message.content.match(/[+\-*\/^()\d\s.]/) &&
+      message.content.match(/[+\-*\/^()]/)
+    ) {
+      const expression = message.content;
+      calculateExpression(message, expression);
+    }
 
     if (
       message.channelId === config.raidChannelId &&
