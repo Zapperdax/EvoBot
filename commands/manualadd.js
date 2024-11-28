@@ -34,25 +34,29 @@ module.exports = {
       _id: "63fb483ba6fd21c8d67e04c3",
     });
 
-    User.findOneAndUpdate(
-      { id: targettedUser.id },
-      { amount, donated: amount >= weeklyDonation ? true : false },
-      { new: true },
-      async (err, user) => {
-        if (err) {
-          interaction.reply("Failed To Update Amount");
-          return;
-        }
-        if (!user) {
-          await interaction.reply(`${targettedUser} Is Not Registered`);
-          return;
-        }
-        await interaction.reply(
-          `Successfully Placed ${new Intl.NumberFormat()
-            .format(amount)
-            .toString()} As ${targettedUser}'s Donation`
-        );
+    try {
+      const user = await User.findOneAndUpdate(
+        { id: targettedUser.id },
+        {
+          amount,
+          donated: amount >= weeklyDonation,
+        },
+        { new: true }
+      );
+
+      if (!user) {
+        await interaction.reply(`${targettedUser} Is Not Registered`);
+        return;
       }
-    );
+
+      await interaction.reply(
+        `Successfully Placed ${new Intl.NumberFormat()
+          .format(amount)
+          .toString()} As ${targettedUser}'s Donation`
+      );
+    } catch (err) {
+      console.error("Error executing manualadd:", err);
+      await interaction.reply("Failed To Update Amount");
+    }
   },
 };

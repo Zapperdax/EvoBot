@@ -34,25 +34,26 @@ module.exports = {
     const targettedUser = interaction.options.getUser("user");
     const extraweek = interaction.options.getNumber("extraweek");
 
-    User.findOneAndUpdate(
-      { id: targettedUser.id },
-      { extraWeeks: extraweek },
-      { new: true },
-      async (err, user) => {
-        if (err) {
-          interaction.reply("Failed To Update Extra Weeks");
-          return;
-        }
-        if (!user) {
-          await interaction.reply(`${targettedUser} Is Not Registered`);
-          return;
-        }
-        await interaction.reply(
-          `Successfully Set ${new Intl.NumberFormat()
-            .format(extraweek)
-            .toString()} As ${targettedUser}'s Extra Weeks`
-        );
+    try {
+      const user = await User.findOneAndUpdate(
+        { id: targettedUser.id },
+        { extraWeeks: extraweek },
+        { new: true }
+      );
+
+      if (!user) {
+        await interaction.reply(`${targettedUser} Is Not Registered`);
+        return;
       }
-    );
+
+      await interaction.reply(
+        `Successfully Set ${new Intl.NumberFormat()
+          .format(extraweek)
+          .toString()} As ${targettedUser}'s Extra Weeks`
+      );
+    } catch (err) {
+      console.error("Error updating extra weeks:", err);
+      await interaction.reply("Failed To Update Extra Weeks");
+    }
   },
 };
