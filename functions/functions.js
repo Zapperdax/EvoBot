@@ -22,42 +22,39 @@ async function calculateExpression(message, expression) {
 
       const filter = (reaction, user) =>
         reaction.emoji.name === "✅" && user.id === message.author.id;
-      const collector = sentMessage.createReactionCollector(filter, {
-        time: 10000,
-      });
 
-      collector.on("collect", async (reaction, user) => {
-        try {
-          if (reaction.emoji.name === "✅") {
-            const resultEmbed = new EmbedBuilder()
-              .setColor("#bb8368")
-              .setAuthor({
-                name: user.displayName,
-                iconURL: user.avatarURL(),
-              })
-              .addFields({
-                name: "Expression Result",
-                value: `\`\`\`${new Intl.NumberFormat()
-                  .format(result)
-                  .toString()}\`\`\``,
-              })
-              .setTimestamp()
-              .setFooter({
-                text: "Use /help <command> To Get Information About A Specific Command",
-              });
-            await message.channel.send({ embeds: [resultEmbed] });
-            collector.stop(); // Stop the collector since we've got the reaction we need
-          }
-        } catch (error) {
-          console.error(error);
-        }
-      });
+      try {
+        const collected = await sentMessage.awaitReactions({
+          filter,
+          max: 1,
+          time: 10000,
+          errors: ["time"],
+        });
 
-      collector.on("end", (collected) => {
-        if (collected.size === 0) {
-          message.channel.send("No Reactions Received.");
+        const reaction = collected.first();
+        if (reaction) {
+          const resultEmbed = new EmbedBuilder()
+            .setColor("#bb8368")
+            .setAuthor({
+              name: message.author.displayName,
+              iconURL: message.author.avatarURL(),
+            })
+            .addFields({
+              name: "Expression Result",
+              value: `\`\`\`${new Intl.NumberFormat()
+                .format(result)
+                .toString()}\`\`\``,
+            })
+            .setTimestamp()
+            .setFooter({
+              text: "Use /help <command> To Get Information About A Specific Command",
+            });
+          await message.channel.send({ embeds: [resultEmbed] });
         }
-      });
+      } catch (collected) {
+        // This block runs if no reaction is collected within the time limit
+        await message.channel.send("No Reactions Received.");
+      }
     } catch (error) {
       message.channel.send(`Error: ${error}`);
     }
