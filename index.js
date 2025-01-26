@@ -120,8 +120,9 @@ client.on("messageCreate", async (message) => {
           },
         };
 
-        const extra = Math.floor((amount - weeklyDonation) / weeklyDonation);
+        let extra = Math.floor((amount - weeklyDonation) / weeklyDonation);
         if (extra >= 1) {
+          if (extra > 4) extra = 4;
           updateObject.$set.extraWeeks = extra;
         }
 
@@ -129,7 +130,8 @@ client.on("messageCreate", async (message) => {
         if (amount >= 0 && amount < weeklyDonation * 2) {
           updateObject.$set.extraWeeks = 0;
         } else if (amount < 0) {
-          const extra = Math.floor(amount / weeklyDonation);
+          let extra = Math.floor(amount / weeklyDonation);
+          if (extra > 4) extra = 4;
           updateObject.$set.extraWeeks = extra;
         }
 
@@ -165,6 +167,8 @@ client.on("messageCreate", async (message) => {
                 .format(weeklyDonation)
                 .toString()}\nStatus: ${emoji}\nExtra Weeks: ${
                 updateObject.$set.extraWeeks
+              }/4\nActual Extra Weeks: ${
+                Math.floor(user.amount / weeklyDonation) - 1
               }`,
           })
           .setTimestamp()

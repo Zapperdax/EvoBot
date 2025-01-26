@@ -51,7 +51,12 @@ module.exports = {
 
           // Update users with 'extraWeeks' less than or equal to 0 to have their donated value to false
           await User.updateMany(
-            { extraWeeks: { $lte: 0 } },
+            {
+              $and: [
+                { extraWeeks: { $lte: 0 } },
+                { amount: { $lt: weeklyDonation } },
+              ],
+            },
             {
               $set: { donated: false }, // Set 'donated' to false
             }
@@ -108,21 +113,21 @@ module.exports = {
       "Asia/Karachi"
     );
 
-    const job2 = new cron.CronJob(
-      "0 0 */1 * * *",
-      async () => {
-        try {
-          const meme = await getRandomMeme();
-          memeChannelId.send(meme.description);
-          memeChannelId.send(meme.url);
-        } catch (err) {
-          console.error(err);
-        }
-      },
-      null,
-      true,
-      "Asia/Karachi"
-    );
+    // const job2 = new cron.CronJob(
+    //   "0 0 */1 * * *",
+    //   async () => {
+    //     try {
+    //       const meme = await getRandomMeme();
+    //       memeChannelId.send(meme.description);
+    //       memeChannelId.send(meme.url);
+    //     } catch (err) {
+    //       console.error(err);
+    //     }
+    //   },
+    //   null,
+    //   true,
+    //   "Asia/Karachi"
+    // );
 
     const job3 = new cron.CronJob(
       "0 0 */3 * * *",
@@ -168,13 +173,13 @@ module.exports = {
             );
           });
 
-          // Update users with 'extraWeeks' less than 0 to get 10% more reduction
-          await Count.updateMany(
-            {},
-            {
-              $set: { raidsSpawnedCount: 0, cardsSpawnedCount: 0 }, // Apply 15% reduction
-            }
-          );
+          // await Count.updateMany(
+          //   {},
+          //   {
+          //     $set: { raidsSpawnedCount: 0, cardsSpawnedCount: 0 },
+          //   }
+          // );
+          await Count.deleteMany({});
 
           raidChannelId.send(`Weekly Raid and Card Spawns Have Been Reset`);
         } catch (err) {
@@ -188,7 +193,7 @@ module.exports = {
 
     job0.start();
     job1.start();
-    job2.start();
+    // job2.start();
     job3.start();
     job4.start();
   },

@@ -32,7 +32,8 @@ module.exports = {
     }
 
     const targettedUser = interaction.options.getUser("user");
-    const extraweek = interaction.options.getNumber("extraweek");
+    let extraweek = interaction.options.getNumber("extraweek");
+    if (extraweek > 4) extraweek = 4;
 
     try {
       const user = await User.findOneAndUpdate(

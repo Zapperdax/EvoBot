@@ -21,11 +21,14 @@ async function executeInfoCommand(interaction) {
   const { weeklyDonation } = await Donation.findOne({
     _id: "63fb483ba6fd21c8d67e04c3",
   });
-  const selectedUser = interaction.options.getUser('user');
-  if(selectedUser) {
+  const selectedUser = interaction.options.getUser("user");
+  if (selectedUser) {
     anotherUserChosen = 1;
   }
-  const user = anotherUserChosen === 1 ?  await User.findOne({id: interaction.options.getUser('user').id}) : await User.findOne({ id: interaction.user.id });
+  const user =
+    anotherUserChosen === 1
+      ? await User.findOne({ id: interaction.options.getUser("user").id })
+      : await User.findOne({ id: interaction.user.id });
   if (!user) {
     await interaction.editReply("No User Found!");
     return;
@@ -38,19 +41,30 @@ async function executeInfoCommand(interaction) {
   const infoEmbed = new EmbedBuilder()
     .setColor("#bb8368")
     .setAuthor({
-      name: anotherUserChosen === 1 ? selectedUser.username + "'s Weekly Donation" : interaction.user.username + "'s Weekly Donation",
-      iconURL: anotherUserChosen === 1 ? selectedUser.displayAvatarURL() : interaction.user.displayAvatarURL(),
+      name:
+        anotherUserChosen === 1
+          ? selectedUser.username + "'s Weekly Donation"
+          : interaction.user.username + "'s Weekly Donation",
+      iconURL:
+        anotherUserChosen === 1
+          ? selectedUser.displayAvatarURL()
+          : interaction.user.displayAvatarURL(),
     })
     .addFields({
       name: "Amount Donated This Week",
       value:
         new Intl.NumberFormat().format(user.amount).toString() +
-        ` / ${new Intl.NumberFormat().format(weeklyDonation).toString()}\nStatus: ${emoji}\nExtra Weeks: ${user.extraWeeks}`,
+        ` / ${new Intl.NumberFormat()
+          .format(weeklyDonation)
+          .toString()}\nStatus: ${emoji}\nExtra Weeks: ${
+          user.extraWeeks
+        }/4\nActual Extra Weeks: ${
+          Math.floor(user.amount / weeklyDonation) - 1
+        }`,
     })
     .setTimestamp()
     .setFooter({
-      text:
-        "Use /help <command> To Get Information About A Specific Command",
+      text: "Use /help <command> To Get Information About A Specific Command",
     });
   await interaction.editReply({ embeds: [infoEmbed] });
 }
