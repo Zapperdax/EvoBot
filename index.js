@@ -167,8 +167,8 @@ client.on("messageCreate", async (message) => {
                 .format(weeklyDonation)
                 .toString()}\nStatus: ${emoji}\nExtra Weeks: ${
                 updateObject.$set.extraWeeks
-              }/4\nActual Extra Weeks: ${
-                Math.floor(user.amount / weeklyDonation) - 1
+              }/4\n-# Actual Extra Weeks: ${
+                Math.floor(amount / weeklyDonation) - 1
               }`,
           })
           .setTimestamp()
