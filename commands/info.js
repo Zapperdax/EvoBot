@@ -58,7 +58,7 @@ async function executeInfoCommand(interaction) {
           .format(weeklyDonation)
           .toString()}\nStatus: ${emoji}\nExtra Weeks: ${
           user.extraWeeks
-        }/4\nActual Extra Weeks: ${
+        }/4\n-# Actual Extra Weeks: ${
           Math.floor(user.amount / weeklyDonation) - 1
         }`,
     })
