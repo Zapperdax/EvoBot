@@ -84,7 +84,7 @@ async function handleRaidSpawn(message, Count) {
     await message.channel.send(`${userName}, Your Raid Count Increased By 1`);
   } catch (err) {
     console.error("Error updating raid count:", err);
-    await message.channel.send("An error occurred while tracking the raid.");
+    // await message.channel.send("An error occurred while tracking the raid.");
   }
 }
 
@@ -106,8 +106,8 @@ async function handleCardSpawn(userId, userName, Count) {
     // Save the updated record
     await userRecord.save();
   } catch (err) {
-    console.error("Error updating raid count:", err);
-    await message.channel.send("An error occurred while tracking the raid.");
+    console.error("Error updating card count:", err);
+    // await message.channel.send("An error occurred while tracking the raid.");
   }
 }
 
